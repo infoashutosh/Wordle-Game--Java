@@ -1,0 +1,117 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Play {
+    public static void main(String[] args) {
+        String[] words = {"HELLO", "GREAT", "GROUP", "BROWN", "CRATE", "FIGHT", "RIGHT"};
+        Wordle board = new Wordle(words);
+        Scanner input = new Scanner(System.in);
+
+        while (!board.isGameOver()) {
+            board.printBoard(input);
+        }
+
+        board.printResult();
+        input.close();
+    }
+}
+
+class Wordle {
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final int MAX_ATTEMPTS = 6; // Define a constant for attempts
+
+    private int attemptsRemaining;
+    private String word;
+    List<String> guesses;
+
+    public Wordle(String[] arr) {
+        word = arr[new Random().nextInt(arr.length)].toUpperCase();
+        attemptsRemaining = MAX_ATTEMPTS;
+        guesses = new ArrayList<>();
+    }
+
+    public void guess(String guess) {
+        if (guess.length() == word.length()) {
+            guesses.add(guess);
+            attemptsRemaining--;
+        }
+    }
+
+    public boolean isGameOver() {
+        return attemptsRemaining == 0 || didWin();
+    }
+
+    public boolean didWin() {
+        return guesses.contains(word);
+    }
+
+    public void printBoard(Scanner input) {
+        printGuesses();
+        printBlanks();
+        clear();
+        promptGuess(input);
+    }
+
+    public void printResult() {
+        if (didWin()) {
+            System.out.println("Congratulations, you guessed correctly");
+        } else {
+            System.out.println("Sorry, you did not guess correctly");
+        }
+        System.out.println("The answer was " + word);
+    }
+
+    private void clear() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    private void promptGuess(Scanner input) {
+        while (true) {
+            System.out.println("Enter a word:");
+            String guess = input.nextLine().toUpperCase();
+            if (guess.length() != word.length()) {
+                System.out.println("Please enter a word of length " + word.length());
+            } else {
+                guess(guess);
+                return;
+            }
+        }
+    }
+
+    private void printGuesses() {
+        StringBuilder b = new StringBuilder();
+        for (String s : guesses) {
+            for (int i = 0; i < s.length(); i++) {
+                char c = s.charAt(i);
+                if (word.charAt(i) == c) {
+                    b.append(ANSI_GREEN).append(c).append(ANSI_RESET);
+                } else if (word.contains(Character.toString(c))) {
+                    b.append(ANSI_YELLOW).append(c).append(ANSI_RESET);
+                } else {
+                    b.append(c);
+                }
+                b.append("|");
+            }
+            b.setLength(b.length() - 1); // Remove last "|"
+            System.out.println(b.toString());
+            b = new StringBuilder();
+        }
+    }
+
+    private void printBlanks() {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < attemptsRemaining; i++) {
+            for (int j = 0; j < word.length(); j++) {
+                b.append("_|");
+            }
+            b.setLength(b.length() - 1); // Remove last "|"
+            System.out.println(b.toString());
+            b = new StringBuilder();
+        }
+    }
+}
