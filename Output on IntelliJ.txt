@@ -1,0 +1,11 @@
+Enter a word:
+HELLO
+[GREEN] H | [GREEN] E | [GREEN] L | [GREEN] L | [GREEN] O |   (Feedback: All letters are correct)
+
+Enter a word:
+WORLD
+[YELLOW] W | [YELLOW] O | R | L | D |   (Feedback: W and O are correct but in the wrong position)
+
+Congratulations, you guessed correctly!
+The answer was HELLO.
+
